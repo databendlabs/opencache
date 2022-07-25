@@ -31,6 +31,15 @@ Chunks belonging to a same object have equals sizes.
 
 A `Chunk` is barely a byte slice.
 
+Chunk size can be specified by an application(when the first time writing an
+object) or decided by opencache server.  The default chunk size is calculated
+with:
+
+```
+default_chunk_size = max(min(file_size/64, 2M),64K)
+```
+
+
 ## Chunk group
 
 Chunks with different sizes are stored in different chunk groups(`ChunkGroup`), e.g.:
@@ -188,13 +197,25 @@ The object header includes:
 Object content is stored in chunks.
 Chunks of the same size belong to the same ChunkGroup.
 
-Every ChunkGroup consists of one active(writable) chunk file and several
-closed(readonly) chunk files.
+Every ChunkGroup consists of **one** active(writable) chunk file and several
+closed(readonly) chunk files. The active chunk file is append only.
 
-The active chunk file is append only.
+Deleting is implemented with another per-chunk-file WAL file(`ChunkIndex`,
+in which chunk index entries are appended one by one:
 
-Deleting is implemented with another per-chunk-file WAL file(ChunkTombstone, in which deleted
-chunk ids are appended one by one.
+- For active chunk, ChunkIndex only contains removed chunk index: `(chunk_id, REMOVE)`;
+    Because chunk file and ChunkIndex file are not `fsync`-ed when being
+    updated.
+
+    When restarting, present chunk ids are loaded from chunk file, while removed
+    chunk ids are loaded from ChunkIndex file.
+
+- For closed chunk, ChunkIndex contains present chunk ids and removed chunk
+    ids(a chunk is removed after being closed(compact)):
+    `(chunk_id, ADD)` or `(chunk_id, REMOVE)`.
+
+    When the server restarts, chunk indexes are loaded just from ChunkIndex
+    file.
 
 
 ## Access store
@@ -223,8 +244,8 @@ Access data does not need compact.
   Key      Chunk
 
   .----.   .----.    Active           Active
-  |key1|   |cid1|    .---------.      .----.  Removed   ..
-  |key2|   |cid2|    | k1,meta |      | c1 |  ChunkIds
+  |key1|   |cid1|    .---------.      .----.  Chunk     ..
+  |key2|   |cid2|    | k1,meta |      | c1 |  Index
   | .. |   | .. |    | k2,meta |    .-|-c2 |  .----.
   |CKSM|   |CKSM|    | ..      |    | | .. |<-|cid5|
   |key3|   |cid3|    | CKSM    |    | | .. |  |cid6|
@@ -235,8 +256,8 @@ Access data does not need compact.
   |keyi|   |cid1|                   |
   |keyj|   |cid2|    Compacted Keys | Compacted Chunks
   | .. |   | .. |    .---------.    |
-  |CKSM|   |CKSM|    | k1,meta |    | .----.  Removed
-  |keyk|   |cid3|    | k2,meta |    | | c1 |  ChunkIds
+  |CKSM|   |CKSM|    | k1,meta |    | .----.  Chunk
+  |keyk|   |cid3|    | k2,meta |    | | c1 |  Index
   | .. |   | .. |    | ..      |    +-|-c2 |  .----.
   '----'   '----'    | CKSM    |    | | .. |<-|cid5|
                      | k3,meta |    | | .. |  |cid6|
@@ -324,7 +345,8 @@ it.
 - It is possible that an object is evicted but there are still orphan chunks.
   These chunks will be evicted finally since there won't be any access to them.
 
-The cache replacement policy is an modified version of `LIRS`.
+The cache replacement policy is a modified and simplified version of `LIRS`.
+
 
 # API
 
@@ -366,6 +388,31 @@ trait Cache {
     fn read(&mut self, key, range)
 }
 ```
+
+
+# Client
+
+Client-side config versioning:
+If a new cache node `C` is added to the cache cluster `{A,B}`,
+and assuming the cache client uses a consistent hash,
+when the new cluster config `{A,B,C}` is published to every client, 1/3 of the data access will encounter a miss.
+
+To upgrade cluster config smoothly, a client needs to access the cache
+cluster using two configs: read from the new cluster first, if there is a miss,
+read the old cluster, until data migration is done. During this period, there
+are two active config `{{A,B},ver=1}` and `{{A,B,C},ver=2}`.
+
+And it is also possible that there are more than two active configs.
+
+Thus for the cache client, it has to:
+- Be able to upgrade cluster config on the fly,
+- support a **joint** config,
+- and be able to retry every config.
+
+A cluster upgrade may looks like this:
+- Initially, every cache-client has config `[{{A,B},ver=1}]`;
+- A new cache node is added, and the new config is published to every client: `[{{A,B},ver=1}, {{A,B,C},ver=2}]`;
+- After a while, config with ver=1 is removed, and another new config is published to every client: `[{{A,B,C},ver=2}]`.
 
 # Caveat
 
