@@ -5,7 +5,7 @@ edition = "2021"
 authors = [
     "Databend Authors <opensource@datafuselabs.com>",
 ]
-categories = ["cache", "server"]
+categories = ["caching"]
 description = "cache server:)"
 documentation = "https://docs.rs/opencache"
 homepage = "https://github.com/datafuselabs/opencache"
