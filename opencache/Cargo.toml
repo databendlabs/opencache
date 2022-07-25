@@ -1,0 +1,25 @@
+[package]
+name = "opencache"
+version = "0.0.1"
+edition = "2021"
+authors = [
+    "Databend Authors <opensource@datafuselabs.com>",
+]
+categories = ["cache", "server"]
+description = "cache server:)"
+documentation = "https://docs.rs/opencache"
+homepage = "https://github.com/datafuselabs/opencache"
+keywords = ["cache"]
+license = "Apache-2.0"
+repository = "https://github.com/datafuselabs/opencache"
+readme = "../README.md"
+
+[dependencies]
+
+[dev-dependencies]
+
+
+[features]
+
+[package.metadata.docs.rs]
+features = ["docinclude"] # Activate `docinclude` during docs.rs build.
