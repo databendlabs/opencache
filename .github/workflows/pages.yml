@@ -1,0 +1,30 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'doc/**'
+      - 'book.toml'
+      - 'README.md'
+      - '.github/workflows/**'
+jobs:
+  deploy-doc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install mdbook plugins
+        uses: drmingdrmer/mdbook-full@main
+
+      - name: Build mdbook
+        run: mdbook build
+        env:
+          RUST_LOG: debug
+
+      - name: Deploy to github page
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Because in `book.toml` there are two `output` table thus the output location is changed.
+          publish_dir: ./doc/book/html
