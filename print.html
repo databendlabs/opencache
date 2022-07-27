@@ -1,0 +1,475 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>opencache</title>
+        <meta name="robots" content="noindex" />
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="The opencache document">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="doc/src/custom.css">
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="arch/opencache.html"><strong aria-hidden="true">1.</strong> Opencache</a></li><li class="chapter-item expanded "><a href="arch/storage-model.html"><strong aria-hidden="true">2.</strong> Storage model</a></li><li class="chapter-item expanded "><a href="arch/cache-replacement.html"><strong aria-hidden="true">3.</strong> Cache replacement</a></li><li class="chapter-item expanded "><a href="arch/internal-api.html"><strong aria-hidden="true">4.</strong> Internal API</a></li><li class="chapter-item expanded "><a href="arch/client.html"><strong aria-hidden="true">5.</strong> Client</a></li><li class="chapter-item expanded "><a href="caveat.html"><strong aria-hidden="true">6.</strong> Caveat</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">opencache</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<p>Opencache is a cache server in rust that run in single node mode, and is an object oriented store that provides two API:
+range <code>write</code> and range <code>read</code> and background auto eviction.</p>
+<p>Cache cluster management is on client side. Backsourcing is not supported, an application has to explicitly write objects
+into it.</p>
+<h1 id="protocols"><a class="header" href="#protocols">Protocols</a></h1>
+<ul>
+<li>http2 PUT GET</li>
+<li>(maybe) aws-s3</li>
+<li>(maybe) grpc stream</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<h1 id="storage-model"><a class="header" href="#storage-model">Storage model</a></h1>
+<p>CacheServer stores object(a byte stream identified by a unique utf-8 string key) in chunks.
+Chunks belonging to a same object have equals sizes.</p>
+<ul>
+<li>
+<p>When reading an object, the first and last chunk may be partially returned if
+the specified range does not align to chunk size.</p>
+</li>
+<li>
+<p>When writing an object, the first and last nonaligned bytes will be discarded.
+Because opencache stores object content in fixed size chunks.</p>
+<p>Optionally, the chunk size can be specified when an object is added(the
+first write) and won’t be changed.</p>
+</li>
+</ul>
+<h2 id="chunk"><a class="header" href="#chunk">Chunk</a></h2>
+<p>A <code>Chunk</code> is barely a byte slice.</p>
+<p>Chunk size can be specified by an application(when the first time writing an
+object) or decided by opencache server.  The default chunk size is calculated
+with:</p>
+<pre><code>default_chunk_size = max(min(file_size/64, 2M),64K)
+</code></pre>
+<h2 id="chunk-group"><a class="header" href="#chunk-group">Chunk group</a></h2>
+<p>Chunks with different sizes are stored in different chunk groups(<code>ChunkGroup</code>), e.g.:</p>
+<ul>
+<li><code>(0, 4KB]</code></li>
+<li><code>(4KB, 1MB]</code></li>
+<li><code>(1MB, 8MB]</code></li>
+<li><code>(8MB, +oo]</code></li>
+</ul>
+<p>Opencache has several predefined ChunkGroup and the actual chunk size for an
+object chunk size is the smallest predefined chunk size that is no less than the
+specified one.</p>
+<h2 id="object"><a class="header" href="#object">Object</a></h2>
+<p>An object in opencache includes an object header and several chunks.</p>
+<p>The header contains application metadata in <code>JSON</code> and internal metadata.
+The internal metadata contains:</p>
+<ul>
+<li>time when the object is added,</li>
+<li>total size,</li>
+<li>chunk size,</li>
+<li>bitmap of stored chunks</li>
+<li>chunk-id of every stored chunk.</li>
+</ul>
+<div style='width:100%; height:240px;'><style type="text/css">svg { width: 100% !important; }</style><svg class="bob" font-family="arial" font-size="14" height="240" width="392" xmlns="http://www.w3.org/2000/svg"><defs><marker id="triangle" markerHeight="8" markerWidth="8" orient="auto" refX="4" refY="2" viewBox="0 0 8 4"><polygon class="fg_fill" points="0,0 0,4 8,2 0,0"/></marker><marker id="clear_triangle" markerHeight="10" markerWidth="10" orient="auto" refX="1" refY="7" viewBox="0 0 20 14"><polygon class="bg_fill" points="2,2 2,12 18,7 2,2"/></marker><marker id="circle" markerHeight="5" markerWidth="5" orient="auto" refX="10" refY="10" viewBox="0 0 20 20"><circle class="fg_fill" cx="10" cy="10" r="8"/></marker><marker id="square" markerHeight="5" markerWidth="5" orient="auto" refX="10" refY="10" viewBox="0 0 20 20"><rect class="fg_fill" height="20" width="20" x="0" y="0"/></marker><marker id="open_circle" markerHeight="10" markerWidth="10" orient="auto" refX="10" refY="10" viewBox="0 0 20 20"><circle class="bg_fill" cx="10" cy="10" r="4"/></marker><marker id="big_open_circle" markerHeight="20" markerWidth="20" orient="auto" refX="20" refY="20" viewBox="0 0 40 40"><circle class="bg_fill" cx="20" cy="20" r="6"/></marker></defs><style type="text/css">rect.backdrop {    fill: transparent;}text{    fill: var(--fg);}circle {    fill: none;    stroke: var(--fg);    stroke-width: 2;}line {    stroke: var(--fg);    stroke-width: 2;    stroke-opacity: 1;    fill-opacity: 1;    stroke-linecap: round;    stroke-linejoin: miter;}path {    fill: none;    stroke: var(--fg);    stroke-width: 2;    stroke-opacity: 1;    fill-opacity: 1;    stroke-linecap: round;    stroke-linejoin: miter;}line.dashed {    stroke-dasharray: 5;}.fg_fill {    fill: var(--fg);}.bg_fill {    fill: transparent;    stroke: var(--fg);    stroke-width: 2;}tspan.head{    fill: none;    stroke: none;}    </style><rect class="backdrop" height="240" width="392" x="0" y="0"/><g><line x1="28" x2="28" y1="12" y2="36"/><path d="M 28 36 A 4 4 0 0 0 32 40"/><path d="M 32 8 A 4 4 0 0 0 28 12"/></g><g><line x1="28" x2="28" y1="140" y2="212"/><path d="M 28 212 A 4 4 0 0 0 32 216"/><path d="M 32 136 A 4 4 0 0 0 28 140"/></g><g><line x1="32" x2="128" y1="8" y2="8"/><path d="M 132 12 A 4 4 0 0 0 128 8"/></g><g><line x1="32" x2="128" y1="40" y2="40"/><path d="M 128 40 A 4 4 0 0 0 132 36"/></g><g><line x1="32" x2="168" y1="136" y2="136"/><path d="M 172 140 A 4 4 0 0 0 168 136"/></g><g><line x1="32" x2="168" y1="216" y2="216"/><path d="M 168 216 A 4 4 0 0 0 172 212"/></g><g><line marker-end="url(#triangle)" x1="52" x2="52" y1="48" y2="124"/></g><g><line x1="116" x2="116" y1="48" y2="68"/><path d="M 116 68 A 4 4 0 0 0 120 72"/></g><g><line x1="120" x2="224" y1="72" y2="72"/><path d="M 228 76 A 4 4 0 0 0 224 72"/></g><g><line x1="132" x2="132" y1="12" y2="36"/></g><g><line x1="172" x2="172" y1="140" y2="212"/></g><g><line x1="228" x2="228" y1="76" y2="152"/><line x1="228" x2="228" y1="152" y2="212"/><line marker-end="url(#triangle)" x1="228" x2="292" y1="152" y2="152"/><path d="M 228 212 A 4 4 0 0 0 232 216"/></g><g><line marker-end="url(#triangle)" x1="232" x2="292" y1="216" y2="216"/></g><g><line x1="300" x2="300" y1="140" y2="164"/><path d="M 300 164 A 4 4 0 0 0 304 168"/><path d="M 304 136 A 4 4 0 0 0 300 140"/></g><g><line x1="300" x2="300" y1="204" y2="228"/><path d="M 300 228 A 4 4 0 0 0 304 232"/><path d="M 304 200 A 4 4 0 0 0 300 204"/></g><g><line x1="304" x2="384" y1="136" y2="136"/><path d="M 388 140 A 4 4 0 0 0 384 136"/></g><g><line x1="304" x2="384" y1="168" y2="168"/><path d="M 384 168 A 4 4 0 0 0 388 164"/></g><g><line x1="304" x2="384" y1="200" y2="200"/><path d="M 388 204 A 4 4 0 0 0 384 200"/></g><g><line x1="304" x2="384" y1="232" y2="232"/><path d="M 384 232 A 4 4 0 0 0 388 228"/></g><g><line x1="388" x2="388" y1="140" y2="164"/></g><g><line x1="388" x2="388" y1="204" y2="228"/></g><g><text x="41" y="156">json-meta</text></g><g><text x="41" y="172">size</text></g><g><text x="41" y="188">chunk-bitmap</text></g><g><text x="41" y="204">chunk-ids</text></g><g><text x="57" y="28">object</text></g><g><text x="65" y="92">header</text></g><g><text x="313" y="156">chunk-1</text></g><g><text x="313" y="220">chunk-2</text></g></svg></div>
+<p>Opencache store objects in a persistent map of <code>&lt;key, header&gt;</code>.
+This map will be loaded in to memory when server starts up.</p>
+<h1 id="data-types"><a class="header" href="#data-types">Data types</a></h1>
+<h2 id="chunk-group-id"><a class="header" href="#chunk-group-id">Chunk group id</a></h2>
+<p><code>ChunkGroupId</code> is 2 ascii char in file name, or 1 byte in memory.
+<code>ChunkGroupId</code> is a encoded representation of the size of chunks in it, similar
+to float number representation.</p>
+<p>The first char(or 4 higher bits) is the <code>power</code>.
+The second char(or 4 lower bits) is the <code>significand</code>.</p>
+<pre><code>        power          significand
+ascii   0              1
+bits    4 higher bits  4 lower bits
+</code></pre>
+<p>The chunk size is calculated as follow: <code>significand * 16^power</code></p>
+<p>E.g. chunk group id of <code>48K</code> chunks is <code>3c</code>: <code>12 * 16^3 = 48K  // c=12</code>;</p>
+<p>Max chunk group id is <code>ff</code>: <code>15 * 16^15 = 15E</code></p>
+<p>Several ChunkGroupId examples are listed as below:</p>
+<pre><code>01: 2 * 16^0 = 2        08: 8 * 16^0 = 8
+11: 2 * 16^1 = 32       18: 8 * 16^1 = 128
+21: 2 * 16^2 = 512      28: 8 * 16^2 = 2K
+31: 2 * 16^3 = 8K       38: 8 * 16^3 = 32K
+41: 2 * 16^4 = 128K     48: 8 * 16^4 = 512K
+51: 2 * 16^5 = 2M       58: 8 * 16^5 = 8M
+61: 2 * 16^6 = 32M      68: 8 * 16^6 = 128M
+71: 2 * 16^7 = 512M     78: 8 * 16^7 = 2G
+</code></pre>
+<h2 id="chunk-id"><a class="header" href="#chunk-id">Chunk id</a></h2>
+<p><code>ChunkId</code> is a <code>u64</code>,
+in which the most significant byte is <code>ChunkGroupId</code>,
+the other 7 bytes is mono incremental index in 54-bit int.</p>
+<pre><code>       &lt;ChunkGroupId&gt; &lt;index&gt;
+byte:  [0]            [1, 7]
+</code></pre>
+<h2 id="key"><a class="header" href="#key">Key</a></h2>
+<p>Key is an arbitrary utf-8 string.</p>
+<h2 id="access-entry"><a class="header" href="#access-entry">Access entry</a></h2>
+<p>A cache replacement algorithm depends the access log to decide which
+object/chunk should be evicted.</p>
+<p>Either a <code>Key</code> or <code>ChunkId</code>, for tracing object access or chunk access
+respectively.</p>
+<h1 id="storage-layout"><a class="header" href="#storage-layout">Storage layout</a></h1>
+<p>Opencache on-disk storage include:</p>
+<ul>
+<li>Manifest file that track all other kind of on-disk files.</li>
+<li>Key files to store object key and object header.</li>
+<li>Chunk files to store cached file data.</li>
+</ul>
+<h2 id="manifest-file"><a class="header" href="#manifest-file">Manifest file</a></h2>
+<p>Manifest is a snapshot of current storage.
+I.e., it’s a list of files belonging to this snapshot.</p>
+<pre><code>data_ver: 0.1.0
+key_meta_ver: 0.2.0
+keys:
+  key-wal-1, key-wal-2...
+  key-compacted-1, key-compacted-2...
+access:
+  acc-1, acc-2...
+chunk-groups:
+  CG-1, CG-2...
+chunks:
+  chunk-id-1, chunk-id-2...
+</code></pre>
+<h2 id="object-store"><a class="header" href="#object-store">Object store</a></h2>
+<p>Object store is a collection of files to persist the object map.
+It includes one active WAL file and several compacted file.</p>
+<p>The object header includes:</p>
+<ul>
+<li>The timestamp when this record is added.</li>
+<li>A flag indicate it is an add operation or remove operation.</li>
+<li>Total size of this object.</li>
+<li>User meta data in json.</li>
+<li>ChunkGroup(CG) this object is allocated in.</li>
+<li><code>ChunkId</code> list of the chunks that are stored. In this list ChunkGroup does
+not need to be stored. Because every chunk in an object belong to the
+same ChunkGroup.</li>
+</ul>
+<h2 id="chunk-store"><a class="header" href="#chunk-store">Chunk store</a></h2>
+<p>Object content is stored in chunks.
+Chunks of the same size belong to the same ChunkGroup.</p>
+<p>Every ChunkGroup consists of <strong>one</strong> active(writable) chunk file and several
+closed(readonly) chunk files. The active chunk file is append only.</p>
+<p>Deleting is implemented with another per-chunk-file WAL file(<code>ChunkIndex</code>,
+in which chunk index entries are appended one by one:</p>
+<ul>
+<li>
+<p>For active chunk, ChunkIndex only contains removed chunk index: <code>(chunk_id, REMOVE)</code>;
+Because chunk file and ChunkIndex file are not <code>fsync</code>-ed when being
+updated.</p>
+<p>When restarting, present chunk ids are loaded from chunk file, while removed
+chunk ids are loaded from ChunkIndex file.</p>
+</li>
+<li>
+<p>For closed chunk, ChunkIndex contains present chunk ids and removed chunk
+ids(a chunk is removed after being closed(compact)):
+<code>(chunk_id, ADD)</code> or <code>(chunk_id, REMOVE)</code>.</p>
+<p>When the server restarts, chunk indexes are loaded just from ChunkIndex
+file.</p>
+</li>
+</ul>
+<h2 id="access-store"><a class="header" href="#access-store">Access store</a></h2>
+<p>Opencache evicts object or chunk by accessing pattern.
+Thus the sequence of recent access has to be persisted.
+Otherwise when a cache server restarts, cached data will be evicted
+in an unexpected way, due to lacking of accessing information.</p>
+<p>Accessing data is tracked in two category: by key and by chunk id.</p>
+<p>Accessing data is stored in several append only files, contains key and
+chunk-id respectively.</p>
+<p>Old access data will be removed periodically.
+Access data does not need compact.</p>
+<div style='width:100%; height:624px;'><style type="text/css">svg { width: 100% !important; }</style><svg class="bob" font-family="arial" font-size="14" height="624" width="584" xmlns="http://www.w3.org/2000/svg"><defs><marker id="triangle" markerHeight="8" markerWidth="8" orient="auto" refX="4" refY="2" viewBox="0 0 8 4"><polygon class="fg_fill" points="0,0 0,4 8,2 0,0"/></marker><marker id="clear_triangle" markerHeight="10" markerWidth="10" orient="auto" refX="1" refY="7" viewBox="0 0 20 14"><polygon class="bg_fill" points="2,2 2,12 18,7 2,2"/></marker><marker id="circle" markerHeight="5" markerWidth="5" orient="auto" refX="10" refY="10" viewBox="0 0 20 20"><circle class="fg_fill" cx="10" cy="10" r="8"/></marker><marker id="square" markerHeight="5" markerWidth="5" orient="auto" refX="10" refY="10" viewBox="0 0 20 20"><rect class="fg_fill" height="20" width="20" x="0" y="0"/></marker><marker id="open_circle" markerHeight="10" markerWidth="10" orient="auto" refX="10" refY="10" viewBox="0 0 20 20"><circle class="bg_fill" cx="10" cy="10" r="4"/></marker><marker id="big_open_circle" markerHeight="20" markerWidth="20" orient="auto" refX="20" refY="20" viewBox="0 0 40 40"><circle class="bg_fill" cx="20" cy="20" r="6"/></marker></defs><style type="text/css">rect.backdrop {    fill: transparent;}text{    fill: var(--fg);}circle {    fill: none;    stroke: var(--fg);    stroke-width: 2;}line {    stroke: var(--fg);    stroke-width: 2;    stroke-opacity: 1;    fill-opacity: 1;    stroke-linecap: round;    stroke-linejoin: miter;}path {    fill: none;    stroke: var(--fg);    stroke-width: 2;    stroke-opacity: 1;    fill-opacity: 1;    stroke-linecap: round;    stroke-linejoin: miter;}line.dashed {    stroke-dasharray: 5;}.fg_fill {    fill: var(--fg);}.bg_fill {    fill: transparent;    stroke: var(--fg);    stroke-width: 2;}tspan.head{    fill: none;    stroke: none;}    </style><rect class="backdrop" height="624" width="584" x="0" y="0"/><g><line x1="20" x2="20" y1="140" y2="244"/><path d="M 20 244 A 4 4 0 0 0 24 248"/><path d="M 24 136 A 4 4 0 0 0 20 140"/></g><g><line x1="20" x2="20" y1="284" y2="388"/><path d="M 20 388 A 4 4 0 0 0 24 392"/><path d="M 24 280 A 4 4 0 0 0 20 284"/></g><g><line x1="24" x2="56" y1="136" y2="136"/><path d="M 60 140 A 4 4 0 0 0 56 136"/></g><g><line x1="24" x2="56" y1="248" y2="248"/><path d="M 56 248 A 4 4 0 0 0 60 244"/></g><g><line x1="24" x2="56" y1="280" y2="280"/><path d="M 60 284 A 4 4 0 0 0 56 280"/></g><g><line x1="24" x2="56" y1="392" y2="392"/><path d="M 56 392 A 4 4 0 0 0 60 388"/></g><g><line x1="52" x2="52" y1="12" y2="36"/><path d="M 52 36 A 4 4 0 0 0 56 40"/><path d="M 56 8 A 4 4 0 0 0 52 12"/></g><g><line x1="56" x2="136" y1="8" y2="8"/><path d="M 140 12 A 4 4 0 0 0 136 8"/></g><g><line x1="56" x2="136" y1="40" y2="40"/><path d="M 136 40 A 4 4 0 0 0 140 36"/></g><g><line x1="60" x2="60" y1="140" y2="244"/></g><g><line x1="60" x2="60" y1="284" y2="388"/></g><g><line x1="92" x2="92" y1="140" y2="244"/><path d="M 92 244 A 4 4 0 0 0 96 248"/><path d="M 96 136 A 4 4 0 0 0 92 140"/></g><g><line x1="92" x2="92" y1="284" y2="388"/><path d="M 92 388 A 4 4 0 0 0 96 392"/><path d="M 96 280 A 4 4 0 0 0 92 284"/></g><g><line x1="96" x2="128" y1="136" y2="136"/><path d="M 132 140 A 4 4 0 0 0 128 136"/></g><g><line x1="96" x2="128" y1="248" y2="248"/><path d="M 128 248 A 4 4 0 0 0 132 244"/></g><g><line x1="96" x2="128" y1="280" y2="280"/><path d="M 132 284 A 4 4 0 0 0 128 280"/></g><g><line x1="96" x2="128" y1="392" y2="392"/><path d="M 128 392 A 4 4 0 0 0 132 388"/></g><g><line x1="132" x2="132" y1="140" y2="244"/></g><g><line x1="132" x2="132" y1="284" y2="388"/></g><g><line x1="140" x2="140" y1="12" y2="36"/></g><g><line x1="172" x2="172" y1="156" y2="260"/><path d="M 172 260 A 4 4 0 0 0 176 264"/><path d="M 176 152 A 4 4 0 0 0 172 156"/></g><g><line x1="172" x2="172" y1="332" y2="436"/><path d="M 172 436 A 4 4 0 0 0 176 440"/><path d="M 176 328 A 4 4 0 0 0 172 332"/></g><g><line x1="172" x2="172" y1="508" y2="612"/><path d="M 172 612 A 4 4 0 0 0 176 616"/><path d="M 176 504 A 4 4 0 0 0 172 508"/></g><g><line x1="176" x2="248" y1="152" y2="152"/><path d="M 252 156 A 4 4 0 0 0 248 152"/></g><g><line x1="176" x2="248" y1="264" y2="264"/><path d="M 248 264 A 4 4 0 0 0 252 260"/></g><g><line x1="176" x2="248" y1="328" y2="328"/><path d="M 252 332 A 4 4 0 0 0 248 328"/></g><g><line x1="176" x2="248" y1="440" y2="440"/><path d="M 248 440 A 4 4 0 0 0 252 436"/></g><g><line x1="176" x2="256" y1="504" y2="504"/><path d="M 260 508 A 4 4 0 0 0 256 504"/></g><g><line x1="176" x2="256" y1="616" y2="616"/><path d="M 256 616 A 4 4 0 0 0 260 612"/></g><g><line x1="220" x2="220" y1="416" y2="432"/></g><g><line marker-end="url(#triangle)" x1="220" x2="220" y1="448" y2="476"/></g><g><line x1="252" x2="252" y1="156" y2="260"/></g><g><line x1="252" x2="252" y1="332" y2="436"/></g><g><line x1="260" x2="260" y1="508" y2="612"/></g><g><line x1="292" x2="292" y1="188" y2="376"/><line x1="292" x2="292" y1="376" y2="452"/><line x1="292" x2="308" y1="376" y2="376"/><line x1="312" x2="308" y1="376" y2="376"/><path d="M 292 452 A 4 4 0 0 0 296 456"/><path d="M 296 184 A 4 4 0 0 0 292 188"/></g><g><line x1="296" x2="308" y1="184" y2="184"/><line x1="312" x2="308" y1="184" y2="184"/></g><g><line x1="296" x2="320" y1="456" y2="456"/><path d="M 324 460 A 4 4 0 0 0 320 456"/></g><g><line x1="308" x2="308" y1="156" y2="228"/><path d="M 308 228 A 4 4 0 0 0 312 232"/><path d="M 312 152 A 4 4 0 0 0 308 156"/></g><g><line x1="308" x2="308" y1="348" y2="420"/><path d="M 308 420 A 4 4 0 0 0 312 424"/><path d="M 312 344 A 4 4 0 0 0 308 348"/></g><g><line x1="308" x2="308" y1="508" y2="548"/><path d="M 308 548 A 4 4 0 0 0 312 552"/><path d="M 312 504 A 4 4 0 0 0 308 508"/></g><g><line x1="312" x2="344" y1="152" y2="152"/><path d="M 348 156 A 4 4 0 0 0 344 152"/></g><g><line x1="312" x2="344" y1="232" y2="232"/><path d="M 344 232 A 4 4 0 0 0 348 228"/></g><g><line x1="312" x2="344" y1="344" y2="344"/><path d="M 348 348 A 4 4 0 0 0 344 344"/></g><g><line x1="312" x2="344" y1="424" y2="424"/><path d="M 344 424 A 4 4 0 0 0 348 420"/></g><g><line x1="312" x2="344" y1="504" y2="504"/><path d="M 348 508 A 4 4 0 0 0 344 504"/></g><g><line x1="312" x2="344" y1="552" y2="552"/><path d="M 344 552 A 4 4 0 0 0 348 548"/></g><g><line marker-end="url(#triangle)" x1="324" x2="324" y1="460" y2="476"/></g><g><line x1="348" x2="348" y1="156" y2="228"/></g><g><line x1="348" x2="348" y1="348" y2="420"/></g><g><line x1="348" x2="348" y1="508" y2="548"/></g><g><line marker-end="url(#triangle)" x1="360" x2="356" y1="200" y2="200"/><line x1="360" x2="372" y1="200" y2="200"/></g><g><line marker-end="url(#triangle)" x1="360" x2="356" y1="392" y2="392"/><line x1="360" x2="372" y1="392" y2="392"/></g><g><line x1="372" x2="372" y1="188" y2="244"/><path d="M 372 244 A 4 4 0 0 0 376 248"/><path d="M 376 184 A 4 4 0 0 0 372 188"/></g><g><line x1="372" x2="372" y1="380" y2="436"/><path d="M 372 436 A 4 4 0 0 0 376 440"/><path d="M 376 376 A 4 4 0 0 0 372 380"/></g><g><line x1="376" x2="408" y1="184" y2="184"/><path d="M 412 188 A 4 4 0 0 0 408 184"/></g><g><line x1="376" x2="408" y1="248" y2="248"/><path d="M 408 248 A 4 4 0 0 0 412 244"/></g><g><line x1="376" x2="408" y1="376" y2="376"/><path d="M 412 380 A 4 4 0 0 0 408 376"/></g><g><line x1="376" x2="408" y1="440" y2="440"/><path d="M 408 440 A 4 4 0 0 0 412 436"/></g><g><line x1="412" x2="412" y1="188" y2="244"/></g><g><line x1="412" x2="412" y1="380" y2="436"/></g><g><text x="17" y="92">Access</text></g><g><text x="17" y="108">Key</text></g><g><text x="25" y="156">key1</text></g><g><text x="25" y="172">key2</text></g><g><text x="25" y="204">CKSM</text></g><g><text x="25" y="220">key3</text></g><g><text x="25" y="300">keyi</text></g><g><text x="25" y="316">keyj</text></g><g><text x="25" y="348">CKSM</text></g><g><text x="25" y="364">keyk</text></g><g><text x="33" y="188">..</text></g><g><text x="33" y="236">..</text></g><g><text x="33" y="268">..</text></g><g><text x="33" y="332">..</text></g><g><text x="33" y="380">..</text></g><g><text x="65" y="28">Manifest</text></g><g><text x="89" y="92">Access</text></g><g><text x="89" y="108">Chunk</text></g><g><text x="97" y="156">cid1</text></g><g><text x="97" y="172">cid2</text></g><g><text x="97" y="204">CKSM</text></g><g><text x="97" y="220">cid3</text></g><g><text x="97" y="300">cid1</text></g><g><text x="97" y="316">cid2</text></g><g><text x="97" y="348">CKSM</text></g><g><text x="97" y="364">cid3</text></g><g><text x="105" y="188">..</text></g><g><text x="105" y="236">..</text></g><g><text x="105" y="268">..</text></g><g><text x="105" y="332">..</text></g><g><text x="105" y="380">..</text></g><g><text x="169" y="92">Keys</text></g><g><text x="169" y="140">Active</text></g><g><text x="169" y="316">Compacted</text></g><g><text x="169" y="492">KeyMeta</text></g><g><text x="185" y="172">k1,meta</text></g><g><text x="185" y="188">k2,meta</text></g><g><text x="185" y="204">..</text></g><g><text x="185" y="220">CKSM</text></g><g><text x="185" y="236">k3,meta</text></g><g><text x="185" y="252">..</text></g><g><text x="185" y="284">..</text></g><g><text x="185" y="348">k1,meta</text></g><g><text x="185" y="364">k2,meta</text></g><g><text x="185" y="380">..</text></g><g><text x="185" y="396">CKSM</text></g><g><text x="185" y="412">k3,meta</text></g><g><text x="185" y="428">..</text></g><g><text x="185" y="524">ts</text></g><g><text x="185" y="540">add|rm</text></g><g><text x="185" y="556">size</text></g><g><text x="185" y="572">userdata</text></g><g><text x="185" y="588">CG</text></g><g><text x="185" y="604">chunkids</text></g><g><text x="249" y="316">Keys</text></g><g><text x="305" y="92">ChunkGroup-i</text></g><g><text x="305" y="140">Active</text></g><g><text x="305" y="316">Compacted</text></g><g><text x="305" y="492">Chunk</text></g><g><text x="313" y="188">-c2</text></g><g><text x="313" y="380">-c2</text></g><g><text x="313" y="524">data</text></g><g><text x="313" y="540">CHSM</text></g><g><text x="321" y="172">c1</text></g><g><text x="321" y="204">..</text></g><g><text x="321" y="220">..</text></g><g><text x="321" y="252">..</text></g><g><text x="321" y="364">c1</text></g><g><text x="321" y="396">..</text></g><g><text x="321" y="412">..</text></g><g><text x="369" y="156">Chunk</text></g><g><text x="369" y="172">Index</text></g><g><text x="369" y="348">Chunk</text></g><g><text x="369" y="364">Index</text></g><g><text x="377" y="204">cid5</text></g><g><text x="377" y="220">cid6</text></g><g><text x="377" y="396">cid5</text></g><g><text x="377" y="412">cid6</text></g><g><text x="385" y="236">..</text></g><g><text x="385" y="316">Chunks</text></g><g><text x="385" y="428">..</text></g><g><text x="449" y="92">ChunkGroup-j</text></g><g><text x="449" y="156">..</text></g><g><text x="569" y="92">..</text></g></svg></div>
+<h1 id="operations"><a class="header" href="#operations">Operations</a></h1>
+<h2 id="write"><a class="header" href="#write">Write</a></h2>
+<p>A cache server does not need strict data durability, thus when new data is
+written(key, chunk, or access data), it does not have to fsync at once.</p>
+<p>For different kind of data, the fsync policies are:</p>
+<ul>
+<li>
+<p>Keys: Keys files are fsync-ed for every <code>k MB</code>(where <code>k</code> is a configurable parameter). A checksum
+record has to be written before fsync. Since on disk data still has to be
+internally consistent.  The checksum record contains checksum of the <code>k MB</code>
+data except itself.</p>
+<p>In other words, Keys file are split into several <code>k MB</code> segment.</p>
+</li>
+<li>
+<p>Access data is similar to Keys files.</p>
+</li>
+<li>
+<p>Chunks is different: Every chunk contains a checksum of itself.
+Chunk files is fsync-ed periodically.</p>
+</li>
+</ul>
+<h2 id="update-manifest"><a class="header" href="#update-manifest">Update manifest</a></h2>
+<p>A write operation does not update <code>Manifest</code> file.
+<code>Manifest</code> is only replaced when files(Key store files, Chunk store files or access store files)
+are added or removed(or configuration changed).
+E.g., when a new Key file is opened, or a compaction of Chunk files is done.</p>
+<p>The Manifest file is named with monotonic incremental integers, e.g.,
+<code>manifest-000021</code>.</p>
+<p>Manifest files can only be added or removed.
+When restarting, opencache list all of the manifest file and use the last valid one(by checking the
+checksum).</p>
+<h1 id="memory-layout"><a class="header" href="#memory-layout">Memory layout</a></h1>
+<p>Keys and Access data are stored in memory for quick access.
+Chunks can be optionally cached in memory but it should be OK there is no in-memory chunk-cache.</p>
+<p>Keys in memory is just a HashMap: <code>ObjectMap</code>.</p>
+<p>Key Access data is fed to key-eviction-algorithm.
+Chunk Access data is fed to chunk-eviction-algorithm.</p>
+<p>When cache server restarts:
+All of the keys are loaded into memory.
+All Access data are replayed by the two eviction algorithm implementations.</p>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<h1 id="cache-replacement"><a class="header" href="#cache-replacement">Cache Replacement</a></h1>
+<p>Object and Chunks are evicted independently.</p>
+<p>The rule is: if a chunk is accessed, the object it belongs to is accessed too.
+This way It’s very likely an object won’t be evicted if there are still chunk accesses to
+it.</p>
+<ul>
+<li>
+<p>It is possible that a chunk is evicted while the other chunks still resides in CacheServer.</p>
+</li>
+<li>
+<p>It is possible that an object resides in CacheServer but all its chunks are
+evicted.</p>
+</li>
+<li>
+<p>It is possible that an object is evicted but there are still orphan chunks.
+These chunks will be evicted finally since there won’t be any access to them.</p>
+</li>
+</ul>
+<p>The cache replacement policy is a modified and simplified version of <code>LIRS</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<h1 id="api"><a class="header" href="#api">API</a></h1>
+<h2 id="chunk-api"><a class="header" href="#chunk-api">Chunk API</a></h2>
+<p>ChunkStorage provides chunk access:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait ChunkStorage {
+    fn add(&amp;mut self, chunk_id, bytes);
+    fn remove(&amp;mut self, chunk_id);
+    fn read(&amp;mut self, chunk_id) -&gt; Stream&lt;&gt;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h2 id="object-api"><a class="header" href="#object-api">Object API</a></h2>
+<p>ObjectStorage provides object access:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait ObjectStorage {
+    fn add(&amp;mut self, key: String, size, meta, prefered_chunck_size);
+    fn remove(&amp;mut self, key)
+    fn access(&amp;mut self, key)
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h2 id="cacheserver-api"><a class="header" href="#cacheserver-api">CacheServer API</a></h2>
+<p>Server level API</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Cache {
+    /// Write chunks to an object.
+    /// Nonexistent object will added implicitly
+    fn write(&amp;mut self, key, chunks)
+
+    /// Read specified `range` of bytes in an object
+    fn read(&amp;mut self, key, range)
+}
+<span class="boring">}
+</span></code></pre></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<h1 id="client"><a class="header" href="#client">Client</a></h1>
+<p>Client-side config versioning:
+If a new cache node <code>C</code> is added to the cache cluster <code>{A,B}</code>,
+and assuming the cache client uses a consistent hash,
+when the new cluster config <code>{A,B,C}</code> is published to every client, 1/3 of the data access will encounter a miss.</p>
+<p>To upgrade cluster config smoothly, a client needs to access the cache
+cluster using two configs: read from the new cluster first, if there is a miss,
+read the old cluster, until data migration is done. During this period, there
+are two active config <code>{{A,B},ver=1}</code> and <code>{{A,B,C},ver=2}</code>.</p>
+<p>And it is also possible that there are more than two active configs.</p>
+<p>Thus for the cache client, it has to:</p>
+<ul>
+<li>Be able to upgrade cluster config on the fly,</li>
+<li>support a <strong>joint</strong> config,</li>
+<li>and be able to retry every config.</li>
+</ul>
+<p>A cluster upgrade may looks like this:</p>
+<ul>
+<li>Initially, every cache-client has config <code>[{{A,B},ver=1}]</code>;</li>
+<li>A new cache node is added, and the new config is published to every client: <code>[{{A,B},ver=1}, {{A,B,C},ver=2}]</code>;</li>
+<li>After a while, config with ver=1 is removed, and another new config is published to every client: <code>[{{A,B,C},ver=2}]</code>.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<h1 id="caveat"><a class="header" href="#caveat">Caveat</a></h1>
+<h2 id="consistency-concern"><a class="header" href="#consistency-concern">Consistency concern</a></h2>
+<p>Cache has consistency issue with the backend storage, i.e., if an object is
+changed in the backend store, there is, <strong>NO</strong> way to provide a strong
+consistent view on the cache side.
+Unless there is a distributed consensus protocol running upon backend store and
+cache(which is expensive).</p>
+<p>Thus it is recommended to only store object that won’t change, i.e, an object on
+the backend will only be added and removed, never be modified.</p>
+<h2 id="space-management"><a class="header" href="#space-management">Space management</a></h2>
+<p>It’s recommended to set the cache space limit to under 80% of the disk,
+since in order to reduce IO, the space of removed chunk won’t be reclaim until next <code>compaction</code>.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+    </body>
+</html>
